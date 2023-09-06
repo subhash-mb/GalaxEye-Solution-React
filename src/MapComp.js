@@ -1,6 +1,12 @@
 // edited working bug - after editing previous intersected is disappearing
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, FeatureGroup, Polygon } from "react-leaflet";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  FeatureGroup,
+  Polygon,
+  Popup,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { EditControl } from "react-leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -11,6 +17,7 @@ export default function MapComp() {
   const [intersectingTiles, setIntersectingTiles] = useState([]);
   const [drawingEnabled, setDrawingEnabled] = useState(false);
   const [editedAOI, setEditedAOI] = useState(null);
+  const [errorPopup, setErrorPopup] = useState(null);
 
   // To fetch the data from the deployed URL
   useEffect(() => {
@@ -30,22 +37,33 @@ export default function MapComp() {
   }, []);
 
   const aftercreatedPolygon = (e) => {
+    //  To clear the erro popup that we got from the previous drwan AOI
+    setErrorPopup(null);
+
     const { layerType, layer } = e;
     if (layerType === "polygon") {
       const aoI = layer.toGeoJSON(); // Get the drawn polygon as a GeoJSON feature
 
       // Check if jsonData is available before filtering
       if (jsonData) {
-        // Calculate the intersection with each tile
-        const newIntersecting = jsonData.filter((tile) =>
-          turf.booleanIntersects(tile.geometry, aoI.geometry)
+        const isDisjoint = jsonData.every((tile) =>
+          turf.booleanDisjoint(tile.geometry, aoI.geometry)
         );
 
-        // Set the intersecting tiles
-        setIntersectingTiles((prevIntersecting) => [
-          ...prevIntersecting,
-          ...newIntersecting,
-        ]);
+        if (isDisjoint) {
+          setErrorPopup("The Drawn AOI is outside of Karnataka!");
+        } else {
+          // Calculate the intersection with each tile
+          const newIntersecting = jsonData.filter((tile) =>
+            turf.booleanIntersects(tile.geometry, aoI.geometry)
+          );
+
+          // Set the intersecting tiles
+          setIntersectingTiles((prevIntersecting) => [
+            ...prevIntersecting,
+            ...newIntersecting,
+          ]);
+        }
       }
     }
   };
@@ -60,17 +78,29 @@ export default function MapComp() {
         const newIntersecting = jsonData.filter((tile) =>
           turf.booleanIntersects(tile.geometry, editedAOI.geometry)
         );
-        setIntersectingTiles(newIntersecting);
+        setIntersectingTiles((prevIntersecting) => [
+          ...prevIntersecting,
+          ...newIntersecting,
+        ]);
       }
     }
   };
 
+  const clearAll = () => {
+    setEditedAOI(null);
+    setIntersectingTiles([]);
+    mapRef.current.setView([12.9716, 77.5946], 10);
+  };
+
+  const mapRef = useRef();
+
   return (
     <div>
       <MapContainer
+        ref={mapRef}
         center={[12.9716, 77.5946]}
         zoom={10}
-        style={{ height: "700px", width: "100%" }}
+        style={{ height: "500px", width: "100%" }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -114,7 +144,20 @@ export default function MapComp() {
             color="black"
           />
         )}
+
+        {/* Popup when user selected AOI out of karnataka */}
+        {errorPopup && (
+          <Popup position={[12.9716, 77.5946]} key={errorPopup}>
+            {errorPopup}
+          </Popup>
+        )}
       </MapContainer>
+      <button
+        onClick={clearAll}
+        className="bg-red-400 text-white font-bold p-2 border border-black rounded-md"
+      >
+        Clear All
+      </button>
     </div>
   );
 }
