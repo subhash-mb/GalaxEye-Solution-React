@@ -95,69 +95,103 @@ export default function MapComp() {
   const mapRef = useRef();
 
   return (
-    <div>
-      <MapContainer
-        ref={mapRef}
-        center={[12.9716, 77.5946]}
-        zoom={10}
-        style={{ height: "500px", width: "100%" }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <FeatureGroup>
-          {drawingEnabled && ( // Enable drawing only when data is loaded
-            <EditControl
-              position="topleft"
-              onCreated={aftercreatedPolygon}
-              onEdited={onEdit}
-              draw={{
-                rectangle: false,
-                circle: false,
-                marker: false,
-                circlemarker: false,
-                polyline: false,
-              }}
+    <div className="flex flex-col md:flex-row">
+      <div className="py-0 md:py-10 mx-0 md:mx-6 md:w-1/4">
+        <h4 className="font-bold text-2xl md:text-3xl text-blue-500  pl-2">
+          Instruction
+        </h4>
+        <div className="bg-white p-2 rounded-lg shadow-lg">
+          <ul className="list-disc list-inside md:space-y-2">
+            <li className="text-lg">
+              Click on Polygon Symbol to select the Area of Interest(AOI)
+            </li>
+            <li className="text-lg">
+              Start Drawing the Triangle, Square, Rectangle etc...
+            </li>
+            <li className="text-lg">
+              Tiles intersecting with the AOI shown on the frontend.
+            </li>
+            <li className="text-lg">Blue Container represents the AOI.</li>
+            <li className="text-lg">
+              Red Container represents the Intersecting Area with AOI.
+            </li>
+            <li className="text-lg">
+              Click on edit icon to change the drawn AOI.
+            </li>
+            <li className="text-lg">
+              Block Container represent the Edited AOI.
+            </li>
+            <li className="text-lg">
+              Click On Clear All button to remove everything from the map.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="w-full md:w-5/6 md:h-5/6 md:pt-10">
+        <MapContainer
+          ref={mapRef}
+          center={[12.9716, 77.5946]}
+          zoom={10}
+          // style={{ height: "400px", width: "100%" }}
+          className=" h-[550px] w-auto "
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <FeatureGroup>
+            {drawingEnabled && ( // Enable drawing only when data is loaded
+              <EditControl
+                position="topleft"
+                onCreated={aftercreatedPolygon}
+                onEdited={onEdit}
+                draw={{
+                  rectangle: false,
+                  circle: false,
+                  marker: false,
+                  circlemarker: false,
+                  polyline: false,
+                }}
+              />
+            )}
+          </FeatureGroup>
+
+          {/* Render intersecting tiles in red */}
+          {intersectingTiles.map((tile, index) => (
+            <Polygon
+              key={index}
+              positions={tile.geometry.coordinates[0].map(([lng, lat]) => [
+                lat,
+                lng,
+              ])}
+              color="red"
+            />
+          ))}
+
+          {editedAOI && (
+            <Polygon
+              positions={editedAOI.geometry.coordinates[0].map(([lng, lat]) => [
+                lat,
+                lng,
+              ])}
+              color="black"
             />
           )}
-        </FeatureGroup>
 
-        {/* Render intersecting tiles in red */}
-        {intersectingTiles.map((tile, index) => (
-          <Polygon
-            key={index}
-            positions={tile.geometry.coordinates[0].map(([lng, lat]) => [
-              lat,
-              lng,
-            ])}
-            color="red"
-          />
-        ))}
-
-        {editedAOI && (
-          <Polygon
-            positions={editedAOI.geometry.coordinates[0].map(([lng, lat]) => [
-              lat,
-              lng,
-            ])}
-            color="black"
-          />
-        )}
-
-        {/* Popup when user selected AOI out of karnataka */}
-        {errorPopup && (
-          <Popup position={[12.9716, 77.5946]} key={errorPopup}>
-            {errorPopup}
-          </Popup>
-        )}
-      </MapContainer>
-      <button
-        onClick={clearAll}
-        className="bg-red-400 text-white font-bold p-2 border border-black rounded-md"
-      >
-        Clear All
-      </button>
+          {/* Popup when user selected AOI out of karnataka */}
+          {errorPopup && (
+            <Popup position={[12.9716, 77.5946]} key={errorPopup}>
+              {errorPopup}
+            </Popup>
+          )}
+        </MapContainer>
+        <button
+          onClick={clearAll}
+          className="bg-red-400 text-white font-bold p-2 border border-black rounded-md mt-3 hover:bg-red-600"
+        >
+          Clear All
+        </button>
+      </div>
     </div>
   );
 }
