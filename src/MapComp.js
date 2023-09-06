@@ -133,7 +133,7 @@ export default function MapComp() {
           center={[12.9716, 77.5946]}
           zoom={10}
           // style={{ height: "400px", width: "100%" }}
-          className=" h-[550px] w-auto "
+          className=" h-[550px] w-auto rounded-lg  border border-black "
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
