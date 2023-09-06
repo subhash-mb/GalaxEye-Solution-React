@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/my-app/static/css/main.bfb37cc4.css",
-    "main.js": "/my-app/static/js/main.5f83c009.js",
-    "static/js/787.e68eef26.chunk.js": "/my-app/static/js/787.e68eef26.chunk.js",
-    "static/media/spritesheet.svg": "/my-app/static/media/spritesheet.a4e0eb7ad904a4858361.svg",
-    "static/media/logo.svg": "/my-app/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/my-app/index.html",
-    "main.bfb37cc4.css.map": "/my-app/static/css/main.bfb37cc4.css.map",
-    "main.5f83c009.js.map": "/my-app/static/js/main.5f83c009.js.map",
-    "787.e68eef26.chunk.js.map": "/my-app/static/js/787.e68eef26.chunk.js.map"
+    "main.css": "/GalaxEye-Solution-React/static/css/main.e2ce75a1.css",
+    "main.js": "/GalaxEye-Solution-React/static/js/main.2d1389b6.js",
+    "static/js/787.e68eef26.chunk.js": "/GalaxEye-Solution-React/static/js/787.e68eef26.chunk.js",
+    "static/media/spritesheet.svg": "/GalaxEye-Solution-React/static/media/spritesheet.a4e0eb7ad904a4858361.svg",
+    "static/media/logo.svg": "/GalaxEye-Solution-React/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/GalaxEye-Solution-React/index.html",
+    "main.e2ce75a1.css.map": "/GalaxEye-Solution-React/static/css/main.e2ce75a1.css.map",
+    "main.2d1389b6.js.map": "/GalaxEye-Solution-React/static/js/main.2d1389b6.js.map",
+    "787.e68eef26.chunk.js.map": "/GalaxEye-Solution-React/static/js/787.e68eef26.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.bfb37cc4.css",
-    "static/js/main.5f83c009.js"
+    "static/css/main.e2ce75a1.css",
+    "static/js/main.2d1389b6.js"
   ]
 }
