@@ -11,6 +11,7 @@ import "leaflet/dist/leaflet.css";
 import { EditControl } from "react-leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw.css";
 import * as turf from "@turf/turf"; // Correct import statement
+import axios from "axios";
 
 export default function MapComp() {
   const [jsonData, setJsonData] = useState(null);
@@ -20,19 +21,37 @@ export default function MapComp() {
   const [errorPopup, setErrorPopup] = useState(null);
 
   // To fetch the data from the deployed URL
-  useEffect(() => {
-    const apiUrl =
-      "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson";
+  // useEffect(() => {
+  //   const apiUrl =
+  //     "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson";
 
-    fetch(apiUrl)
-      .then((response) => response.json())
+  //   fetch(apiUrl)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       setJsonData(data.features);
+  //       console.log("the response: ", data.features);
+  //       setDrawingEnabled(true); // Enable drawing after data is loaded
+  //     })
+  //     .catch((error) => {
+  //       console.log("Error while getting data:", error);
+  //     });
+  // }, []);
+
+  // using Axios
+
+  useEffect(() => {
+    const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
+    axios
+      .get(
+        "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson"
+      )
       .then((data) => {
         setJsonData(data.features);
-        console.log("the response: ", data.features);
-        setDrawingEnabled(true); // Enable drawing after data is loaded
+        setDrawingEnabled(true);
+        console.log("The Responce from Karntaka.jeojson :", data.features);
       })
       .catch((error) => {
-        console.log("Error while getting data:", error);
+        console.log("Error while getting data from Karnataka.jeojson: ", error);
       });
   }, []);
 
@@ -46,11 +65,11 @@ export default function MapComp() {
 
       // Check if jsonData is available before filtering
       if (jsonData) {
-        const isDisjoint = jsonData.every((tile) =>
+        const isoutOfKarnataka = jsonData.every((tile) =>
           turf.booleanDisjoint(tile.geometry, aoI.geometry)
         );
 
-        if (isDisjoint) {
+        if (isoutOfKarnataka) {
           setErrorPopup("The Drawn AOI is outside of Karnataka!");
         } else {
           // Calculate the intersection with each tile
