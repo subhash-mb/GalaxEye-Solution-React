@@ -77,6 +77,7 @@ export default function MapComp() {
             ...prevIntersecting,
             ...newIntersecting,
           ]);
+          setErrorPopup("Intersection Calculation completed.");
         }
       }
     }
