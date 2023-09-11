@@ -10,7 +10,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { EditControl } from "react-leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw.css";
-import * as turf from "@turf/turf"; // Correct import statement
+import * as turf from "@turf/turf"; // To calculate the Inetrsected Area
 import axios from "axios";
 
 export default function MapComp() {
@@ -20,13 +20,13 @@ export default function MapComp() {
   const [editedAOI, setEditedAOI] = useState(null);
   const [errorPopup, setErrorPopup] = useState(null);
 
-  // To fetch the data from the deployed URL
+  // using Axios to fetch the data from the deployed URL
   // useEffect(() => {
-  //   const apiUrl =
-  //     "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson";
-
-  //   fetch(apiUrl)
-  //     .then((response) => response.json())
+  // const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
+  //   axios
+  //     .get(
+  //       "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson"
+  //     )
   //     .then((data) => {
   //       setJsonData(data.features);
   //       console.log("the response: ", data.features);
@@ -37,18 +37,14 @@ export default function MapComp() {
   //     });
   // }, []);
 
-  // using Axios
-
   useEffect(() => {
-    const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
     axios
-      .get(
-        "https://file.notion.so/f/s/1a1e461b-4293-428d-88da-5089a8cc8cf3/karnataka.geojson?id=2f305225-bab6-4c37-9e38-1bd78cd07209&table=block&spaceId=9301458a-f465-42d3-80eb-7c09bae15034&expirationTimestamp=1694073600000&signature=1cd5OqV8BXf1PpR5nJdBfM7f6fF98Ob3q4GvDR1Aylg&downloadName=karnataka.geojson"
-      )
-      .then((data) => {
-        setJsonData(data.features);
+      .get("http://localhost:3000/features")
+      .then((resp) => {
+        const responseData = resp.data; // Access the response data
+        console.log("the json responce: ", responseData);
+        setJsonData(responseData);
         setDrawingEnabled(true);
-        console.log("The Responce from Karntaka.jeojson :", data.features);
       })
       .catch((error) => {
         console.log("Error while getting data from Karnataka.jeojson: ", error);
@@ -56,12 +52,11 @@ export default function MapComp() {
   }, []);
 
   const aftercreatedPolygon = (e) => {
-    //  To clear the erro popup that we got from the previous drwan AOI
+    //  To clear the error popup that we got from the previous drwan AOI
     setErrorPopup(null);
-
     const { layerType, layer } = e;
     if (layerType === "polygon") {
-      const aoI = layer.toGeoJSON(); // Get the drawn polygon as a GeoJSON feature
+      const aoI = layer.toGeoJSON(); // Get the drawn polygon Coordinates
 
       // Check if jsonData is available before filtering
       if (jsonData) {
