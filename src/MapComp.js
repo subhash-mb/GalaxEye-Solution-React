@@ -19,6 +19,7 @@ export default function MapComp() {
   const [drawingEnabled, setDrawingEnabled] = useState(false);
   const [editedAOI, setEditedAOI] = useState(null);
   const [errorPopup, setErrorPopup] = useState(null);
+  const [popupPosition, setPopupPosition] = useState([]);
 
   // using Axios to fetch the data from the deployed URL
   // useEffect(() => {
@@ -65,7 +66,18 @@ export default function MapComp() {
         );
 
         if (isoutOfKarnataka) {
-          setErrorPopup("The Drawn AOI is outside of Karnataka!");
+          const aoICoordinates = aoI.geometry.coordinates[0];
+          const centerLat =
+            aoICoordinates.reduce((sum, coord) => sum + coord[1], 0) /
+            aoICoordinates.length;
+          const centerLng =
+            aoICoordinates.reduce((sum, coord) => sum + coord[0], 0) /
+            aoICoordinates.length;
+
+          setPopupPosition([centerLat, centerLng]);
+          setErrorPopup(
+            "The Drawn AOI is outside Karnataka. Please draw inside Karnataka."
+          );
         } else {
           // Calculate the intersection with each tile
           const newIntersecting = jsonData.filter((tile) =>
@@ -77,6 +89,14 @@ export default function MapComp() {
             ...prevIntersecting,
             ...newIntersecting,
           ]);
+          const aoICoordinates = aoI.geometry.coordinates[0];
+          const centerLat =
+            aoICoordinates.reduce((sum, coord) => sum + coord[1], 0) /
+            aoICoordinates.length;
+          const centerLng =
+            aoICoordinates.reduce((sum, coord) => sum + coord[0], 0) /
+            aoICoordinates.length;
+          setPopupPosition([centerLat, centerLng]);
           setErrorPopup("Intersection Calculation completed.");
         }
       }
@@ -195,7 +215,7 @@ export default function MapComp() {
 
           {/* Popup when user selected AOI out of karnataka */}
           {errorPopup && (
-            <Popup position={[12.9716, 77.5946]} key={errorPopup}>
+            <Popup position={popupPosition} key={errorPopup}>
               {errorPopup}
             </Popup>
           )}
