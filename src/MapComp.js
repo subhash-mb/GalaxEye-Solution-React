@@ -139,6 +139,12 @@ export default function MapComp() {
     setEditedAOI(null);
     setIntersectingTiles([]);
     mapRef.current.setView([12.9716, 77.5946], 10);
+    setErrorPopup("All map data has been cleared.");
+
+    setPopupPosition([12.9716, 77.5946]);
+    setTimeout(() => {
+      setErrorPopup(null);
+    }, 2000);
   };
 
   const mapRef = useRef();
