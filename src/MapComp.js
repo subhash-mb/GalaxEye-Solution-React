@@ -58,7 +58,6 @@ export default function MapComp() {
     const { layerType, layer } = e;
     if (layerType === "polygon") {
       const aoI = layer.toGeoJSON(); // Get the drawn polygon Coordinates
-
       // Check if jsonData is available before filtering
       if (jsonData) {
         const isoutOfKarnataka = jsonData.every((tile) =>
@@ -117,11 +116,26 @@ export default function MapComp() {
           ...prevIntersecting,
           ...newIntersecting,
         ]);
+
+        // To Calculate the center coordinates of the edited AOI
+        const editedAOICoordinates = editedAOI.geometry.coordinates[0];
+        const centerLat =
+          editedAOICoordinates.reduce((sum, coord) => sum + coord[1], 0) /
+          editedAOICoordinates.length;
+        const centerLng =
+          editedAOICoordinates.reduce((sum, coord) => sum + coord[0], 0) /
+          editedAOICoordinates.length;
+
+        // Set the popup position to the center coordinates
+        setPopupPosition([centerLat, centerLng]);
+
+        setErrorPopup("Drawn AOI Edited Successfully!.");
       }
     }
   };
 
   const clearAll = () => {
+    setErrorPopup(null);
     setEditedAOI(null);
     setIntersectingTiles([]);
     mapRef.current.setView([12.9716, 77.5946], 10);
